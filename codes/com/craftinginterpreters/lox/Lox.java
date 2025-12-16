@@ -43,10 +43,15 @@ public class Lox {
   private static void run(String source) {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
-    for (Token token : tokens) {
-      System.out.println(token);
-    }
-    if (hadError) System.exit(65);
+    
+    Parser parser = new Parser(tokens);
+    Expr expression = parser.parse();
+
+    // 構文エラーがあったら実行を止める
+    if (hadError) return;
+
+    // 現在はまだ実行できないので、ツリー構造を表示してみる
+    System.out.println(new AstPrinter().print(expression));
   }
 
   static void error(int line, String message) {
@@ -59,6 +64,12 @@ public class Lox {
     hadError = true;
   }
 
-
+  static void error(Token token, String message) {
+    if (token.type == TokenType.EOF) {
+      report(token.line, " at end", message);
+    } else {
+      report(token.line, " at '" + token.lexeme + "'", message);
+    }
+  }
 
 }
