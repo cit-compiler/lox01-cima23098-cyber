@@ -10,6 +10,8 @@ import java.util.List;
 
 public class Lox {
   static boolean hadError = false;
+  private static final Interpreter interpreter = new Interpreter();
+  static boolean hadRuntimeError = false;
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {
       System.out.println("Usage: jlox [script]");
@@ -40,18 +42,17 @@ public class Lox {
    }
  }
 
-  private static void run(String source) {
+private static void run(String source) {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
-    
     Parser parser = new Parser(tokens);
     Expr expression = parser.parse();
 
-    // 構文エラーがあったら実行を止める
+    // 構文エラーがあれば止める
     if (hadError) return;
 
-    // 現在はまだ実行できないので、ツリー構造を表示してみる
-    System.out.println(new AstPrinter().print(expression));
+    // 計算を実行！
+    interpreter.interpret(expression);
   }
 
   static void error(int line, String message) {
@@ -64,6 +65,12 @@ public class Lox {
     hadError = true;
   }
 
+  static void runtimeError(RuntimeError error) {
+    System.err.println(error.getMessage() +
+        "\n[line " + error.token.line + "]");
+    hadRuntimeError = true;
+  }
+  
   static void error(Token token, String message) {
     if (token.type == TokenType.EOF) {
       report(token.line, " at end", message);
