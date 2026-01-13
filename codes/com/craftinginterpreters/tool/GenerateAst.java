@@ -12,11 +12,21 @@ public class GenerateAst {
       System.exit(64);
     }
     String outputDir = args[0];
+
     defineAst(outputDir, "Expr", Arrays.asList(
+      "Assign   : Token name, Expr value",
       "Binary   : Expr left, Token operator, Expr right",
       "Grouping : Expr expression",
       "Literal  : Object value",
-      "Unary    : Token operator, Expr right"
+      "Unary    : Token operator, Expr right",
+      "Variable : Token name"
+    ));
+
+    defineAst(outputDir, "Stmt", Arrays.asList(
+      "Block      : List<Stmt> statements",
+      "Expression : Expr expression",
+      "Print      : Expr expression",
+      "Var        : Token name, Expr initializer"
     ));
   }
 
@@ -65,7 +75,8 @@ public class GenerateAst {
   private static void defineType(
       PrintWriter writer, String baseName,
       String className, String fieldList) {
-    writer.println("  static class " + className + " extends " + baseName + " {");
+    writer.println("  static class " + className + " extends " +
+        baseName + " {");
 
     // Constructor.
     writer.println("    " + className + "(" + fieldList + ") {");
@@ -81,9 +92,10 @@ public class GenerateAst {
 
     // Visitor pattern.
     writer.println();
-    writer.println("    @Override");
+    writer.println("    @Override"); // ← ここを文字列の中に修正しました
     writer.println("    <R> R accept(Visitor<R> visitor) {");
-    writer.println("      return visitor.visit" + className + baseName + "(this);");
+    writer.println("      return visitor.visit" +
+        className + baseName + "(this);");
     writer.println("    }");
 
     // Fields.
