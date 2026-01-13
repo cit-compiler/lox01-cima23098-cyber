@@ -26,7 +26,6 @@ class AstPrinter implements Expr.Visitor<String> {
     return parenthesize(expr.operator.lexeme, expr.right);
   }
 
-  // ★ここから下を追加してエラーを解消します
   @Override
   public String visitVariableExpr(Expr.Variable expr) {
     return expr.name.lexeme;

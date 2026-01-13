@@ -92,7 +92,7 @@ public class GenerateAst {
 
     // Visitor pattern.
     writer.println();
-    writer.println("    @Override"); // ← ここを文字列の中に修正しました
+    writer.println("    @Override"); 
     writer.println("    <R> R accept(Visitor<R> visitor) {");
     writer.println("      return visitor.visit" +
         className + baseName + "(this);");
