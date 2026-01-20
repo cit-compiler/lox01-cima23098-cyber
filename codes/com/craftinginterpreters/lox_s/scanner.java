@@ -28,7 +28,7 @@ class Scanner {
     return tokens;
   }
 
-  private void scanToken() {
+private void scanToken() {
     char c = advance();
     switch (c) {
       case '(': addToken(LEFT_PAREN); break;
@@ -55,7 +55,6 @@ class Scanner {
         break;
       case '/':
         if (match('/')) {
-          // A comment goes until the end of the line.
           while (peek() != '\n' && !isAtEnd()) advance();
         } else {
           addToken(SLASH);
@@ -65,16 +64,16 @@ class Scanner {
       case ' ':
       case '\r':
       case '\t':
-        // Ignore whitespace.
         break;
 
       case '\n':
         line++;
         break;
 
-      case '"': string(); break;
+      case '"': string('"'); break;  // 修正箇所
+      case '\'': string('\''); break; // 修正箇所
 
-        default:
+      default:
         if (isDigit(c)) {
           number();
         } else if (isAlpha(c)) {
@@ -110,8 +109,8 @@ class Scanner {
         Double.parseDouble(source.substring(start, current)));
   }
 
-    private void string() {
-    while (peek() != '"' && !isAtEnd()) {
+private void string(char quote) {
+    while (peek() != quote && !isAtEnd()) { 
       if (peek() == '\n') line++;
       advance();
     }
@@ -121,13 +120,12 @@ class Scanner {
       return;
     }
 
-    // The closing ".
+
     advance();
 
-    // Trim the surrounding quotes.
     String value = source.substring(start + 1, current - 1);
     addToken(STRING, value);
-  }
+  } 
 
     private boolean match(char expected) {
     if (isAtEnd()) return false;
